@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
   HttpStatus,
   Post,
   Query,
@@ -11,17 +12,11 @@ import { WebhooksRoutes } from '../routes/webhooks.routes';
 import { Response } from 'express';
 import { WhatsappAPIRequest } from '../interfaces/IApiWhatsApp';
 import { BuildMessage } from '../utils-functions/BuildMessage';
-
-const Rollbar = require('rollbar');
-const rollbar = new Rollbar({
-  accessToken: '1997f310e9934328ba09c947491a6161',
-  captureUncaught: true,
-  captureUnhandledRejections: true,
-});
+import { Logger } from '../../../config/logger/logger.service';
 
 @Controller(WebhooksRoutes.WHATSAPP_WEBHOOK)
 export class WhatsappApiWebhooks {
-  constructor() {}
+  constructor(private readonly loggerService: Logger) {}
 
   @Get()
   public async verifyToken(
@@ -37,12 +32,11 @@ export class WhatsappApiWebhooks {
       ) {
         return res.send(hubChallenge);
       } else {
-        throw new Error('Request dont works');
+        throw new HttpException('Request dont works', HttpStatus.BAD_REQUEST);
       }
     } catch (e) {
-      return res
-        .status(HttpStatus.BAD_REQUEST)
-        .json({ code: 'BAD_REQUEST', message: e.message });
+      this.loggerService.error(e.message);
+      throw new HttpException(e.message, e.status);
     }
   }
 
@@ -50,7 +44,6 @@ export class WhatsappApiWebhooks {
   public getMessage(@Res() res: Response, @Body() payload: WhatsappAPIRequest) {
     try {
       let textMessage;
-      rollbar.log(JSON.stringify(payload));
       const entry = payload.entry[0];
       const changes = entry.changes[0];
       if (changes.value.messages) {
@@ -58,11 +51,11 @@ export class WhatsappApiWebhooks {
         textMessage = BuildMessage(messageObject);
       }
 
-      rollbar.log(textMessage);
+      this.loggerService.loggerInCloud(textMessage);
 
       return res.status(HttpStatus.OK).json({ textMessage });
     } catch (e) {
-      rollbar.error(e.message);
+      this.loggerService.error(e.message);
       res.send('EVENT_RECEIVED');
     }
   }
