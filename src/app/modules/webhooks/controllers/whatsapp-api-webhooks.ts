@@ -49,12 +49,14 @@ export class WhatsappApiWebhooks {
   @Post()
   public getMessage(@Res() res: Response, @Body() payload: WhatsappAPIRequest) {
     try {
+      let textMessage;
       rollbar.log(JSON.stringify(payload));
       const entry = payload.entry[0];
       const changes = entry.changes[0];
-      const messageObject = changes.value.messages[0];
-
-      const textMessage = BuildMessage(messageObject);
+      if (changes.value.messages) {
+        const messageObject = changes.value.messages[0];
+        textMessage = BuildMessage(messageObject);
+      }
 
       rollbar.log(textMessage);
 
