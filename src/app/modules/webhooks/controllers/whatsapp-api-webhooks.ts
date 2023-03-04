@@ -9,7 +9,7 @@ export class WhatsappApiWebhooks {
   @Get('verify-token')
   public async verifyToken(
     @Res() res: Response,
-    @Query('hub.verify_token') hubVerifyToken: string,
+    @Query('hub.mode') hubVerifyToken: string,
     @Query('hub.challenge') hubChallenge: string,
   ) {
     try {
