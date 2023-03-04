@@ -12,6 +12,13 @@ import { Response } from 'express';
 import { WhatsappAPIRequest } from '../interfaces/IApiWhatsApp';
 import { BuildMessage } from '../utils-functions/BuildMessage';
 
+const Rollbar = require('rollbar');
+const rollbar = new Rollbar({
+  accessToken: '1997f310e9934328ba09c947491a6161',
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+});
+
 @Controller(WebhooksRoutes.WHATSAPP_WEBHOOK)
 export class WhatsappApiWebhooks {
   constructor() {}
@@ -48,7 +55,12 @@ export class WhatsappApiWebhooks {
 
       const textMessage = BuildMessage(messageObject);
 
+      rollbar.log(textMessage);
+
       return res.status(HttpStatus.OK).json({ textMessage });
-    } catch (e) {}
+    } catch (e) {
+      rollbar.error(e.message);
+      res.send('EVENT_RECEIVED');
+    }
   }
 }
