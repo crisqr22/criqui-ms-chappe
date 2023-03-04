@@ -6,7 +6,7 @@ import { Response } from 'express';
 export class WhatsappApiWebhooks {
   constructor() {}
 
-  @Get('verify-token')
+  @Get()
   public async verifyToken(
     @Res() res: Response,
     @Query('hub.verify_token') hubVerifyToken: string,
