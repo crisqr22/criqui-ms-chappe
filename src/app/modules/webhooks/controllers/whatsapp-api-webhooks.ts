@@ -67,10 +67,12 @@ export class WhatsappApiWebhooks {
           JSON.stringify(traceabilityInternalData),
         );
 
-        await this.whatsappApiService.sendPlainText(
+        const apiResponse = await this.whatsappApiService.sendPlainText(
           traceabilityInternalData.contact_phone,
           'Hola bienvenido a tu nuevo chat',
         );
+
+        this.loggerService.loggerInCloud(JSON.stringify(apiResponse));
       }
 
       return res.status(HttpStatus.OK).json({ textMessage });

@@ -23,7 +23,7 @@ export class WhatsappApiService extends AbstractMetaHttpService {
   }
 
   private sendPlainTextFromObservable(payload: any) {
-    const url = `${this.url}/internal/htr`;
+    const url = `${this.url}/101528149555106/messages`;
     return this.httpService
       .post(url, payload, {
         headers: this.headers,
