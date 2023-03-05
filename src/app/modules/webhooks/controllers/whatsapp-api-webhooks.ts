@@ -43,6 +43,7 @@ export class WhatsappApiWebhooks {
   @Post()
   public getMessage(@Res() res: Response, @Body() payload: WhatsappAPIRequest) {
     try {
+      this.loggerService.loggerInCloud(JSON.stringify(payload));
       let textMessage;
       const entry = payload.entry[0];
       const changes = entry.changes[0];
