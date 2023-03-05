@@ -5,7 +5,7 @@ import { Logger } from '../../../config/logger/logger.service';
 export class AbstractMetaHttpService {
   public readonly url = 'https://graph.facebook.com';
   public readonly headers = {
-    Authorization: `Bearer ${process.env.META_WHATSAPP_TOKEN}`,
+    Authorization: `Bearer ${process.env.META_WHATSAPP_API_ACCESS_TOKEN}`,
     'Content-Type': 'application/json',
   };
 
